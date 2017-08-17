@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                int countColumn = 1000;
-                int countRow = 1000;
+                int countColumn = 200;
+                int countRow = 200;
                 TableCell[][] table= new TableCell[countColumn][countRow];
                 table[0][0] = new TableCell("empty");
                 for (int i = 1; i < countRow; i++) {

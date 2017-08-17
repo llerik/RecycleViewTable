@@ -4,8 +4,8 @@ package view.recicle.table.kirill.sorokin.ru.tablerecicleview;
  * Created by Kirill on 30.04.2017.
  */
 public class Cell {
-    int x;
-    int y;
+    private int x;
+    private int y;
 
     public Cell(int x, int y) {
         this.x = x;
@@ -33,7 +33,6 @@ public class Cell {
         return "x : " + x + " y : " + y;
     }
 
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -45,17 +44,16 @@ public class Cell {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Cell other = (Cell) obj;
-        if (x != other.getX())
-            return false;
-        if (y != other.getY())
-            return false;
-        return true;
+        return x == other.getX() && y == other.getY();
     }
 }

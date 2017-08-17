@@ -9,7 +9,7 @@ public class TableModel {
     public static final int LEFT = 2;
     public static final int BODY = 3;
 
-    TableCell[][] columns;
+    private TableCell[][] columns;
 
     public TableModel() {
     }
@@ -53,7 +53,19 @@ public class TableModel {
     }
 
     public int getPosition(Cell cell) {
-        return cell.getY() * columns.length + cell.getX();
+        if (cell.getX() == 0 && cell.getY() == 0) {
+            return 0;
+        } else if (cell.getY() == 0) {
+            return cell.getX();
+        } else if (cell.getX() == 0) {
+            return (columns[0].length - 1) + cell.getY();
+        } else {
+
+            //1 + (cl - 1) + (rl - 1) + (cl - 1) * (y - 1) + (x - 1)
+
+            return (columns[0].length - 1) + (columns.length - 1)  + (cell.getY() - 1) + (cell.getX() - 1);
+        }
+//        return cell.getY() * columns.length + cell.getX();
     }
 
     public int getCountRow() {

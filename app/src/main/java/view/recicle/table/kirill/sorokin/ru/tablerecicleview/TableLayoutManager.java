@@ -1,8 +1,6 @@
 package view.recicle.table.kirill.sorokin.ru.tablerecicleview;
 
-import android.graphics.PointF;
 import android.graphics.Rect;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -13,8 +11,9 @@ import java.util.HashMap;
  */
 public class TableLayoutManager extends RecyclerView.LayoutManager {
 
-    private static final int VIEW_HEIGHT = 100;
-    private static final int VIEW_WIDTH = 180;
+    //TODO размеры нужно подгружать для каждого типа view
+    private static final int VIEW_HEIGHT = 180;
+    private static final int VIEW_WIDTH = 210;
 
     private HashMap<Cell, View> viewCache = new HashMap<>();
     private TableAdapter tableAdapter;
@@ -44,6 +43,22 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
         fill(recycler);
     }
 
+    @Override
+    public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        int delta = scrollVerticallyInternal(dy);
+        offsetChildrenVertical(-delta);
+        fill(recycler);
+        return delta;
+    }
+
+    @Override
+    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        int delta = scrollHorizontallyInternal(dx);
+        offsetChildrenHorizontal(-delta);
+        fill(recycler);
+        return delta;
+    }
+
     private void fill(RecyclerView.Recycler recycler) {
         viewCache.clear();
         for (int i = 0, cnt = getChildCount(); i < cnt; i++) {
@@ -55,7 +70,7 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
         for (Cell cell : viewCache.keySet()) {
             detachView(viewCache.get(cell));
         }
-        fill(anchor, recycler);
+        fillInternal(anchor, recycler);
         for (Cell cell : viewCache.keySet()) {
             recycler.recycleView(viewCache.get(cell));
         }
@@ -91,22 +106,22 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
         int top = getDecoratedTop(anchor);
         int right = getDecoratedRight(anchor);
         int bottom = getDecoratedBottom(anchor);
-        Cell anchoCell = tableAdapter.getCellAtPosition(getPosition(anchor));
+        Cell anchorCell = tableAdapter.getCellAtPosition(getPosition(anchor));
         int countColumn = tableAdapter.getCountColumn();
         int countRow = tableAdapter.getCountRow();
 
         //ищем левый верхний угол
-        restrictions[0] = new Cell(anchoCell.getX(), anchoCell.getY());
-        while (left > 0 && restrictions[0].getX() >= 0) {
+        restrictions[0] = new Cell(anchorCell.getX(), anchorCell.getY());
+        while (left > 0 && restrictions[0].getX() >= 1) {
             left -= VIEW_WIDTH;
             restrictions[0].setX(restrictions[0].getX() - 1);
         }
-        while (top > 0 && restrictions[0].getY() >= 0) {
+        while (top > 0 && restrictions[0].getY() >= 1) {
             top -= VIEW_HEIGHT;
             restrictions[0].setY(restrictions[0].getY() - 1);
         }
         //ищем правый нижний угол
-        restrictions[1] = new Cell(anchoCell.getX(), anchoCell.getY());
+        restrictions[1] = new Cell(anchorCell.getX(), anchorCell.getY());
         while (right < width && restrictions[1].getX() <= countColumn) {
             right += VIEW_WIDTH;
             restrictions[1].setX(restrictions[1].getX() + 1);
@@ -118,7 +133,7 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
         return restrictions;
     }
 
-    private void fill(View anchor, RecyclerView.Recycler recycler) {
+    private void fillInternal(View anchor, RecyclerView.Recycler recycler) {
         if (getItemCount() == 0) {
             return;
         }
@@ -189,14 +204,6 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
         return spec;
     }
 
-    @Override
-    public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        int delta = scrollVerticallyInternal(dy);
-        offsetChildrenVertical(-delta);
-        fill(recycler);
-        return delta;
-    }
-
     private int scrollVerticallyInternal(int dy) {
         int childCount = getChildCount();
         if (childCount == 0) {
@@ -235,14 +242,6 @@ public class TableLayoutManager extends RecyclerView.LayoutManager {
                 delta = Math.min(viewBottom - parentBottom, dy);
             }
         }
-        return delta;
-    }
-
-    @Override
-    public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-        int delta = scrollHorizontallyInternal(dx);
-        offsetChildrenHorizontal(-delta);
-        fill(recycler);
         return delta;
     }
 
